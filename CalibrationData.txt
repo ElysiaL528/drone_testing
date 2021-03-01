@@ -1,0 +1,80 @@
+#1
+
+C-format
+    .sweep = {
+      {.tilt = -0.050709, .phase = 0.000000, .curve = 0.357357, .gibphase = 1.992199, .gibmag = -0.015771, .ogeephase = 2.078221, .ogeemag = 0.781026, },
+      {.tilt = 0.049767, .phase = -0.006410, .curve = 0.369651, .gibphase = 2.684854, .gibmag = -0.012641, .ogeephase = 2.898701, .ogeemag = 0.641948, },
+    },
+    .valid = true,
+
+python-format
+calib = LighthouseBsCalibration()
+calib.sweeps[0].tilt = -0.050709
+calib.sweeps[0].phase = 0.000000
+calib.sweeps[0].curve = 0.357357
+calib.sweeps[0].gibphase = 1.992199
+calib.sweeps[0].gibmag = -0.015771
+calib.sweeps[0].ogeephase = 2.078221
+calib.sweeps[0].ogeemag = 0.781026
+calib.sweeps[1].tilt = 0.049767
+calib.sweeps[1].phase = -0.006410
+calib.sweeps[1].curve = 0.369651
+calib.sweeps[1].gibphase = 2.684854
+calib.sweeps[1].gibmag = -0.012641
+calib.sweeps[1].ogeephase = 2.898701
+calib.sweeps[1].ogeemag = 0.641948
+calib.valid = True
+
+
+#2
+
+C-format
+    .sweep = {
+      {.tilt = -0.052741, .phase = 0.000000, .curve = 0.131445, .gibphase = 2.541155, .gibmag = -0.005665, .ogeephase = 3.079340, .ogeemag = 0.144523, },
+      {.tilt = 0.049684, .phase = -0.006519, .curve = 0.204206, .gibphase = 2.586327, .gibmag = -0.003412, .ogeephase = 0.736291, .ogeemag = -0.111319, },
+    },
+    .valid = true,
+
+python-format
+calib = LighthouseBsCalibration()
+calib.sweeps[0].tilt = -0.052741
+calib.sweeps[0].phase = 0.000000
+calib.sweeps[0].curve = 0.131445
+calib.sweeps[0].gibphase = 2.541155
+calib.sweeps[0].gibmag = -0.005665
+calib.sweeps[0].ogeephase = 3.079340
+calib.sweeps[0].ogeemag = 0.144523
+calib.sweeps[1].tilt = 0.049684
+calib.sweeps[1].phase = -0.006519
+calib.sweeps[1].curve = 0.204206
+calib.sweeps[1].gibphase = 2.586327
+calib.sweeps[1].gibmag = -0.003412
+calib.sweeps[1].ogeephase = 0.736291
+calib.sweeps[1].ogeemag = -0.111319
+calib.valid = True
+
+
+
+
+
+
+Geometry data:
+
+Base station  0
+C-format
+{.valid = true, .origin = {-3.690154, 2.738513, 2.828041, }, .mat = {{0.872434, 0.435745, 0.221328, }, {-0.401656, 0.897267, -0.183261, }, {-0.278445, 0.070985, 0.957825, }, }},  
+
+python-format
+geo = LighthouseBsGeometry()
+geo.origin = [-3.69015376, 2.73851285, 2.8280414 ]
+geo.rotation_matrix = [[0.87243368,0.43574459,0.22132809], [-0.40165611, 0.89726681,-0.18326114], [-0.2784454 , 0.07098541, 0.95782526], ]
+geo.valid = True
+
+Base station  1
+C-format
+{.valid = true, .origin = {3.732742, -2.282719, 3.250822, }, .mat = {{-0.742733, -0.582103, -0.330915, }, {0.528067, -0.813083, 0.245033, }, {-0.411696, 0.007249, 0.911293, }, }},
+python-format
+geo = LighthouseBsGeometry()
+geo.origin = [ 3.73274207,-2.28271911, 3.25082246]
+geo.rotation_matrix = [[-0.74273289,-0.58210259,-0.33091453], [ 0.52806684,-0.81308303, 0.24503344], [-0.41169559, 0.0072494 , 0.91129259], ]
+geo.valid = True

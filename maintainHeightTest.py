@@ -1,3 +1,8 @@
+"""
+Attempts to fly the drone at a constant height, even if the drone flies over a higher surface. The challenge is to override the flow deck, 
+which uses a camera at the bottom of the drone to detect the distance between the drone and the object below it, and then tries to
+maintain the same distance between the two at all times. The goal is to make the drone not move up or down if the ground moves up or down.
+"""
 import time
 
 import cflib.crtp

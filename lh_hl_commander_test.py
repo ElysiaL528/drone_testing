@@ -1,34 +1,8 @@
-# -*- coding: utf-8 -*-
-#
-#     ||          ____  _ __
-#  +------+      / __ )(_) /_______________ _____  ___
-#  | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
-#  +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
-#   ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
-#
-#  Copyright (C) 2018 Bitcraze AB
-#
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA  02110-1301, USA.
 """
-Simple example that connects to one crazyflie (check the address at the top
-and update it to your crazyflie address) and uses the high level commander
-to send setpoints and trajectory to fly a figure 8.
+Similar to the detect_tower_height test, except this implements the lighthouse coordinate system
 
-This example is intended to work with any positioning system (including LPS).
-It aims at documenting how to set the Crazyflie in position control mode
-and how to send setpoints using the high level commander.
+Flies the drone straight toward the tower until the multiranger detects the tower within the given range. Then, the drone flies upward until
+the drone no longer sees the tower, indicating it reached the top. The drone flies forward another 0.2 meters, and then lands.
 """
 
 #TODO: Figure out how to set the initial (x,y,z) coordinate for the position commander so the first command goes to the right position
@@ -48,7 +22,8 @@ from cflib.utils.multiranger import Multiranger
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M'
+#uri = 'radio://0/80/2M'
+uri = 'radio://0/80/250K/FEED10700B'
 
 curr_x = 0
 curr_y = 0
@@ -131,7 +106,7 @@ def wait_for_position_estimator(scf):
             if (max_x - min_x) < threshold and (
                     max_y - min_y) < threshold and (
                     max_z - min_z) < threshold:
-                #start_position_printing(scf)
+                start_position_printing(scf)
                 break
 
 
@@ -159,19 +134,22 @@ def run_sequence(cf):
     
 
     with Multiranger(scf) as multiranger:
-        while True:
-            print(f"left: {multiranger.left}, right: {multiranger.right}, front: {multiranger.front}, back: {multiranger.back}")
-            time.sleep(1)
+        # while True:
+        #     print(f"left: {multiranger.left}, right: {multiranger.right}, front: {multiranger.front}, back: {multiranger.back}")
+        #     time.sleep(1)
         pc = PositionHlCommander(cf, curr_x, curr_y, curr_z)
-        pc.take_off(0.3)
+        pc.take_off(0.2)
         pc.go_to(0, 0, 0.3)
         time.sleep(3)
-        pc.go_to(-0.35, 0.01, 0.3)
+        pc.go_to(-0.35, 0.5, 0.3)
         time.sleep(3)
         x = -0.35
-        y = 0.01
+        y = 0.6
         z = 0.3
-        while not is_close(multiranger.left, 0.7):
+
+        dist = 0.3
+
+        while not is_close(multiranger.left, dist) and curr_y < 1.7:
             y += 0.01
             pc.go_to(x, y, z)
             print(f"left: {multiranger.left}")
@@ -179,14 +157,18 @@ def run_sequence(cf):
         time.sleep(5)
         print(f"final left: {multiranger.left}")
         
-    #     while is_close(multiranger.left, 0.7):
-    #         z += 0.03
-    #         pc.go_to(x, y, z)
-    #         print(f"x: {x}, y: {y}, z: {z}")
-    #     print("reached height")
-    #     time.sleep(3)
-        pc.go_to(x, y, 0.2)
+        while is_close(multiranger.left, dist):
+            z += 0.01
+            pc.go_to(x, y, z)
+            print(f"x: {x}, y: {y}, z: {z}")
+        print("reached height")
+        time.sleep(3)
+        newY = y + 0.2
+        pc.go_to(x, newY, z)
         time.sleep(1)
+        pc.land()
+        #pc.go_to(x, y, 0.2)
+        #time.sleep(1)
     #     time.sleep(1)
     #     pc.land()
     #     # while True:
@@ -221,7 +203,7 @@ if __name__ == '__main__':
         #duration = upload_trajectory(cf, trajectory_id, figure8)
         #print('The sequence is {:.1f} seconds long'.format(duration))
         reset_estimator(cf)
-        run_sequence(cf)
+        #run_sequence(cf)
         # while True:
         #     pass
         

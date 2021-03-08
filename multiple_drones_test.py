@@ -1,3 +1,6 @@
+#tests to see if two drones can be controlled by the same radio
+#this test seems to work
+
 import time
 
 import cflib.crtp

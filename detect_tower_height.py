@@ -1,3 +1,9 @@
+"""
+Flies straight-on toward a tower until the multiranger deck detects that the tower is less than the given range.
+
+Then, the drone flies upward until the multiranger no longer sees the tower, indicating that it reached the top. After, it lands again.
+"""
+
 import time
 
 import cflib.crtp
@@ -32,23 +38,23 @@ def param_deck_flow(name, value):
 
 def run(scf):
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
-        # with Multiranger(scf) as multiranger:
-        #     time.sleep(2)
-        #     pc.set_default_velocity(0.1)
-        #     x = 0
-        #     y = 0
-        #     z = DEFAULT_HEIGHT
+        with Multiranger(scf) as multiranger:
+            time.sleep(2)
+            pc.set_default_velocity(0.1)
+            x = 0
+            y = 0
+            z = DEFAULT_HEIGHT
 
-        #     while is_close(multiranger.front) == False:
-        #         x += 0.1
-        #         pc.go_to(x, y, z)
-        #     time.sleep(2)
-        #     while is_close(multiranger.front) == True:
-        #         z += 0.1
-        #         pc.go_to(x, y, z)
-        #     time.sleep(3)
-        #     pc.go_to(0, 0, 0.2)
-        #     time.sleep(1)
+            while is_close(multiranger.front) == False:
+                x += 0.1
+                pc.go_to(x, y, z)
+            time.sleep(2)
+            while is_close(multiranger.front) == True:
+                z += 0.1
+                pc.go_to(x, y, z)
+            time.sleep(3)
+            pc.go_to(0, 0, 0.2)
+            time.sleep(1)
         pc.set_default_velocity(0.1)
         pc.go_to(0, 0.1, 0.3)
         time.sleep(1)

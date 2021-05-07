@@ -8,7 +8,7 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.log import LogConfig #a representation of one log configuration that enables logging from the Crazyflie
 from cflib.crazyflie.syncLogger import SyncLogger #The SyncLogger class provides synchronous access to log data from the Crazyflie.
 
-uri = 'radio://0/80/2M/E7E7E7E7A1'
+uri = 'radio://0/80/2M/E7E7E7E7E7'
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)

@@ -5,7 +5,7 @@
 import sys
 import time
 
-import openvr
+#import openvr
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -15,13 +15,16 @@ from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M'
+#uri = 'radio://0/80/2M'
+uri = 'radio://0/80/2M/E7E7E7E7E7'
+
+DEFAULT_HEIGHT = 0.4
 
 is_deck_attached = False
 
-print('Opening')
-vr = openvr.init(openvr.VRApplication_Other)
-print('Opened')
+# print('Opening')
+# vr = openvr.init(openvr.VRApplication_Other)
+# print('Opened')
 
 def param_deck_flow(name, value):
     global is_deck_attached
@@ -121,9 +124,20 @@ def vector_add(v0, v1):
 
 def run_sequence(scf):
     cf = scf.cf
-    commander = cf.high_level_commander
+    # commander = cf.high_level_commander
 
-    
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=0.3) as pc:
+        pc.go_to(0, 0, 1)
+        time.sleep(5)
+        pc.go_to(0, 0, 0.2)
+        time.sleep(2)
+        # pc.go_to(1, 0, 0.5)
+        # time.sleep(2)
+        # pc.go_to(0, 1, 0.3)
+        # time.sleep(2)
+        # pc.go_to(0, 0, 0.15)
+        # pc.go_to(0, 0, 0.15)
+        # time.sleep(1)
 
     # with PositionHlCommander(
     #             scf,
@@ -167,13 +181,14 @@ if __name__ == '__main__':
                                 cb=param_deck_flow)
         time.sleep(2)
         if is_deck_attached:
+            print("flow deck attached")
             reset_estimator(scf)
             start_position_printing(scf)
-            #run_sequence(scf)
+            run_sequence(scf)
             while True:
                 pass
             
         else:
             print("Deck not attached")
 
-    openvr.shutdown()
+#    openvr.shutdown()

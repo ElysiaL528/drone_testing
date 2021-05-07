@@ -22,8 +22,8 @@ from cflib.utils.multiranger import Multiranger
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
 # URI to the Crazyflie to connect to
-#uri = 'radio://0/80/2M'
-uri = 'radio://0/80/250K/FEED10700B'
+uri = 'radio://0/80/2M/E7E7E7E7D4'
+#uri = 'radio://0/80/250K/E7E7E7E7D4'
 
 curr_x = 0
 curr_y = 0
@@ -137,36 +137,42 @@ def run_sequence(cf):
         # while True:
         #     print(f"left: {multiranger.left}, right: {multiranger.right}, front: {multiranger.front}, back: {multiranger.back}")
         #     time.sleep(1)
+        print("fly")
         pc = PositionHlCommander(cf, curr_x, curr_y, curr_z)
         pc.take_off(0.2)
-        pc.go_to(0, 0, 0.3)
+        pc.go_to(0, 0, 0.2)
         time.sleep(3)
-        pc.go_to(-0.35, 0.5, 0.3)
-        time.sleep(3)
-        x = -0.35
-        y = 0.6
-        z = 0.3
-
-        dist = 0.3
-
-        while not is_close(multiranger.left, dist) and curr_y < 1.7:
-            y += 0.01
-            pc.go_to(x, y, z)
-            print(f"left: {multiranger.left}")
-        print("reached tower")
-        time.sleep(5)
-        print(f"final left: {multiranger.left}")
+        #pc.go_to(0, 0, 0.2)
         
-        while is_close(multiranger.left, dist):
-            z += 0.01
-            pc.go_to(x, y, z)
-            print(f"x: {x}, y: {y}, z: {z}")
-        print("reached height")
-        time.sleep(3)
-        newY = y + 0.2
-        pc.go_to(x, newY, z)
-        time.sleep(1)
-        pc.land()
+
+        
+        # pc.go_to(-0.35, 0.5, 0.3)
+        # time.sleep(3)
+        # x = -0.35
+        # y = 0.6
+        # z = 0.3
+
+        # dist = 0.3
+
+        # while not is_close(multiranger.left, dist) and curr_y < 1.7:
+        #     y += 0.01
+        #     pc.go_to(x, y, z)
+        #     print(f"left: {multiranger.left}")
+        # print("reached tower")
+        # time.sleep(5)
+        # print(f"final left: {multiranger.left}")
+        
+        # while is_close(multiranger.left, dist):
+        #     z += 0.01
+        #     pc.go_to(x, y, z)
+        #     print(f"x: {x}, y: {y}, z: {z}")
+        # print("reached height")
+        # time.sleep(3)
+        # newY = y + 0.2
+        # pc.go_to(x, newY, z)
+        # time.sleep(1)
+        # pc.land()
+
         #pc.go_to(x, y, 0.2)
         #time.sleep(1)
     #     time.sleep(1)
@@ -203,7 +209,7 @@ if __name__ == '__main__':
         #duration = upload_trajectory(cf, trajectory_id, figure8)
         #print('The sequence is {:.1f} seconds long'.format(duration))
         reset_estimator(cf)
-        #run_sequence(cf)
+        run_sequence(cf)
         # while True:
         #     pass
         

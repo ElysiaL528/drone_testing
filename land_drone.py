@@ -7,7 +7,7 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 
 #uri = 'radio://0/80/2M'
-uri = 'radio://0/80/250K/FEED10700B'
+uri = 'radio://0/80/250K/E7E7E7E7D4'
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)

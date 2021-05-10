@@ -128,14 +128,13 @@ def run_sequence(scf):
 
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=0.3) as pc:
         pc.go_to(0, 0, 1)
-        time.sleep(5)
-        pc.go_to(0, 0, 0.2)
+        time.sleep(3)
+        pc.go_to(-0.57, 1.35, 1)
         time.sleep(2)
-        # pc.go_to(1, 0, 0.5)
+        # pc.go_to(-0.57, 1.35, 0.9)
+        # time.sleep(1)
+        # pc.go_to(0, 1, 0.3)  
         # time.sleep(2)
-        # pc.go_to(0, 1, 0.3)
-        # time.sleep(2)
-        # pc.go_to(0, 0, 0.15)
         # pc.go_to(0, 0, 0.15)
         # time.sleep(1)
 

@@ -126,11 +126,25 @@ def run_sequence(scf):
     cf = scf.cf
     # commander = cf.high_level_commander
 
-    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=0.3) as pc:
-        pc.go_to(0, 0, 1)
-        time.sleep(3)
-        pc.go_to(-0.57, 1.35, 1)
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
+        
+        # #take off at origin, go to tower
+        # pc.go_to(0, 0, 1)
+        # time.sleep(5)
+        # pc.go_to(-0.39, 1.47, 1)
+        # time.sleep(3)
+        # pc.set_default_velocity(0.3)
+        # pc.go_to(-0.39, 1.47, 0.73)
+
+        # #take off at tower, go to origin
+        pc.go_to(-0.39, 1.47, 1)
         time.sleep(2)
+        pc.go_to(0, 0, 1)
+        time.sleep(2)
+        pc.go_to(0, 0, 0.2)
+        time.sleep(2)
+
+        #time.sleep(1)
         # pc.go_to(-0.57, 1.35, 0.9)
         # time.sleep(1)
         # pc.go_to(0, 1, 0.3)  

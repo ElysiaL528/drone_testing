@@ -18,7 +18,7 @@ from cflib.positioning.position_hl_commander import PositionHlCommander
 #uri = 'radio://0/80/2M'
 uri = 'radio://0/80/2M/E7E7E7E7E7'
 
-DEFAULT_HEIGHT = 0.4
+DEFAULT_HEIGHT = 0.6
 
 is_deck_attached = False
 
@@ -128,21 +128,62 @@ def run_sequence(scf):
 
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
         
-        # #take off at origin, go to tower
-        # pc.go_to(0, 0, 1)
-        # time.sleep(5)
-        # pc.go_to(-0.39, 1.47, 1)
+        #take off and land at same point
+        # pc.go_to(0, 0, 0.4)
         # time.sleep(3)
+        # pc.set_default_velocity(0.2)
+        # pc.go_to(0, 0, 0.2)
+
+        #take off at tower, land at origin
+        # pc.set_default_velocity(0.2)
+        # pc.go_to(-0.32, 1.26, 0.6)
+        # time.sleep(2)
+        # pc.go_to(0, 0, 0.6)
+        # time.sleep(2)
+        # pc.go_to(0, 0, 0.2)
+
+        #take off at origin, land on tower
+        # pc.go_to(0, 0, 0.6)
         # pc.set_default_velocity(0.3)
-        # pc.go_to(-0.39, 1.47, 0.73)
+        # pc.go_to(-0.32, 1.26, 0.6)
+        # time.sleep(2)
+        # pc.go_to(-0.32, 1.26, 0.35)
+        
+        #square fly (1 m each side)
+        pc.go_to(0, 0, 0.4)
+        time.sleep(3)
+        pc.go_to(1, 0, 0.4)
+        time.sleep(3)
+        pc.go_to(1, -1, 0.4)
+        time.sleep(3)
+        pc.go_to(0, -1, 0.4)
+        time.sleep(3)
+        pc.go_to(0, 0, 0.4)
+        time.sleep(2)
+        pc.set_default_velocity(0.2)
+        pc.go_to(0, 0, 0.2)
+
+        #bigger square fly
+        # pc.go_to(0, 0.5, 0.6)
+        # time.sleep(3)
+        # pc.go_to(2, 0.5, 0.6)
+        # time.sleep(3)
+        # pc.go_to(2, -1, 0.6)
+        # time.sleep(3)
+        # pc.go_to(0, -1, 0.6)
+        # time.sleep(3)
+        # pc.go_to(0, 0, 0.6)
+        # time.sleep(2)
+        # pc.set_default_velocity(0.2)
+        # pc.go_to(0, 0, 0.2)
 
         # #take off at tower, go to origin
-        pc.go_to(-0.39, 1.47, 1)
-        time.sleep(2)
-        pc.go_to(0, 0, 1)
-        time.sleep(2)
-        pc.go_to(0, 0, 0.2)
-        time.sleep(2)
+        # pc.go_to(-0.39, 1.47, 1)
+        # time.sleep(2)
+        # pc.go_to(0, 0, 1)
+        # time.sleep(2)
+        # pc.go_to(0, 0, 0.2)
+        # time.sleep(2)
 
         #time.sleep(1)
         # pc.go_to(-0.57, 1.35, 0.9)

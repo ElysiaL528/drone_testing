@@ -5,6 +5,9 @@
 
 import time
 
+import pygame
+import enum
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -18,9 +21,9 @@ from collections import namedtuple
 uri = 'radio://0/80/2M/E7E7E7E7E7'
 
 #these values are set in position_callback, when the drone gets info from the base stations
-x = 0
-y = 0
-z = 0
+xPos = 0
+yPos = 0
+zPos = 0
 
 DEFAULT_HEIGHT = 0.5
 
@@ -33,12 +36,21 @@ found_location = False
 # and the second parameter takes in the different variables
 Point = namedtuple('Point', 'x y z') 
 
-#list of Point
+class ControllerButtons(enum.Enum):
+    A = 0
+    B = 1
+    X = 2
+    Y = 3
+    LB = 4
+    RB = 5
+
+#list of Points for the drone to travel to
 coordinates = [
     Point(0, 0, 0.4),
-    Point(0.5, 0, 0.4),
-    Point(0, -0.5, 0.4),
-    Point(0, 0, 0.4)
+    Point(2, -1, 0.6),
+    Point(-0.33, 1, 1),
+    Point(-0.33, 1.53, 1),
+    Point(-0.33, 1.53, 0.7)
 ]
 
 def wait_for_position_estimator(scf):
@@ -92,17 +104,17 @@ def reset_estimator(scf):
 
 
 def position_callback(timestamp, data, logconf):
-    global x
-    global y
-    global z
+    global xPos
+    global yPos
+    global zPos
     global found_location 
-    x = data['kalman.stateX']
-    y = data['kalman.stateY']
-    z = data['kalman.stateZ']
+    xPos = data['kalman.stateX']
+    yPos = data['kalman.stateY']
+    zPos = data['kalman.stateZ']
 
     found_location = True
 
-    #print('pos: ({}, {}, {})'.format(x, y, z))
+    print('pos: ({}, {}, {})'.format(xPos, yPos, zPos))
 
 def set_position_callback(scf):
     log_conf = LogConfig(name='Position', period_in_ms=500)
@@ -125,16 +137,27 @@ def run_sequence(scf):
     cf = scf.cf
 
     
-    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT+z, default_velocity=1) as pc:
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT+zPos, default_velocity=1) as pc:
         #fly to random positions, waiting for console input between each movement
-        # for (x, y, z) in coordinates:
-        #     pc.go_to(x, y, z)
-        #     print('input anything to continue')
-        #     input()
-        # pc.set_default_velocity(0.1)
-        # pc.go_to(0, 0, 0.2)
-        time.sleep(3)
-        pc.set_default_velocity(0.2)
+        button_pressed = -1
+        for (x, y, z) in coordinates:
+            pressed_button = False
+            pc.go_to(x, y, z)
+            print(f'x: {x}, y: {y}, z: {z}')
+            while not pressed_button:
+                for event in pygame.event.get(): # User did something.
+                    button_pressed = event.dict.get("button")
+                    if event.type == pygame.JOYBUTTONDOWN:
+                        print("Joystick button pressed.")
+                        pressed_button = True
+            if button_pressed == ControllerButtons.LB.value: #the LB button cancels the rest of the flight & returns to origin
+                pc.set_default_velocity(0.2)
+                pc.go_to(0, 0, 0.2)
+                break
+            elif button_pressed == ControllerButtons.X.value:
+                pc.set_default_velocity(0.1)
+
+        time.sleep(1)
         
         #take off and land at same point
         # pc.go_to(0, 0, 0.4)
@@ -187,17 +210,24 @@ def run_sequence(scf):
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)
+
+    pygame.init() #NEEDS to be declared to do anything with pygame
+
+    #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
+    joystick = pygame.joystick.Joystick(0)
     
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
         reset_estimator(scf)
         set_position_callback(scf)
         while not found_location:
             pass
-        print(f'x: {x}')
-        print(f'y: {y}')
-        print(f'z: {z}')
-        # for (x, y, z) in coordinates:
-        #     print(f'x: {x}, y: {y}, z: {z}')
+        print(f'x: {xPos}')
+        print(f'y: {yPos}')
+        print(f'z: {zPos}')
         run_sequence(scf)
+
+        
+        
+
         # while True:
         #     pass

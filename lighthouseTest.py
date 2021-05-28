@@ -1,6 +1,4 @@
 #TODO:
-#Step-by-step capability where we can input (via keyboard or controller) to run each step of the program
-#Somehow remove the necessity of taking off to a default height, or take off to currentHeight + default height
 #Landing correction (i.e. if you land a bit off from the target, take off and land again until within a certain margin of target)
 
 import time
@@ -134,11 +132,15 @@ def vector_add(v0, v1):
     return [v0[0] + v1[0], v0[1] + v1[1], v0[2] + v1[2]]
 
 def run_sequence(scf):
+    global DEFAULT_HEIGHT
+
     cf = scf.cf
 
-    
+    DEFAULT_HEIGHT = 0.5
+    #since the crazyflie automatically takes off when we use the "with" keyword,
+    #adding its zPos to the default height ensures that it rises to the default height in reference to its starting height
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT+zPos, default_velocity=1) as pc:
-        #fly to random positions, waiting for console input between each movement
+        #fly to random positions, waiting for controller input between each movement
         button_pressed = -1
         for (x, y, z) in coordinates:
             pressed_button = False
@@ -158,54 +160,6 @@ def run_sequence(scf):
                 pc.set_default_velocity(0.1)
 
         time.sleep(1)
-        
-        #take off and land at same point
-        # pc.go_to(0, 0, 0.4)
-        # pc.set_default_velocity(0.2)
-        # pc.go_to(0, 0, 0.2)
-
-        #take off at tower, land at origin
-        # pc.set_default_velocity(0.2)
-        # pc.go_to(-0.32, 1.26, 0.6)
-        # time.sleep(2)
-        # pc.go_to(0, 0, 0.6)
-        # time.sleep(2)
-        # pc.go_to(0, 0, 0.2)
-
-        #take off at origin, land on tower
-        # pc.go_to(0, 0, 0.6)
-        # pc.set_default_velocity(0.3)
-        # pc.go_to(-0.32, 1.26, 0.6)
-        # time.sleep(2)
-        # pc.go_to(-0.32, 1.26, 0.35)
-        
-        #square fly (1 m each side)
-        # pc.go_to(0, 0, 0.4)
-        # time.sleep(3)
-        # pc.go_to(1, 0, 0.4)
-        # time.sleep(3)
-        # pc.go_to(1, -1, 0.4)
-        # time.sleep(3)
-        # pc.go_to(0, -1, 0.4)
-        # time.sleep(3)
-        # pc.go_to(0, 0, 0.4)
-        # time.sleep(2)
-        # pc.set_default_velocity(0.2)
-        # pc.go_to(0, 0, 0.2)
-
-        #bigger square fly
-        # pc.go_to(0, 0.5, 0.6)
-        # time.sleep(3)
-        # pc.go_to(2, 0.5, 0.6)
-        # time.sleep(3)
-        # pc.go_to(2, -1, 0.6)
-        # time.sleep(3)
-        # pc.go_to(0, -1, 0.6)
-        # time.sleep(3)
-        # pc.go_to(0, 0, 0.6)
-        # time.sleep(2)
-        # pc.set_default_velocity(0.2)
-        # pc.go_to(0, 0, 0.2)
 
 
 if __name__ == '__main__':

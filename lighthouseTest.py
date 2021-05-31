@@ -1,10 +1,13 @@
 #TODO:
 #Landing correction (i.e. if you land a bit off from the target, take off and land again until within a certain margin of target)
+#Write a function that takes in a starting point and ending point and generates a list of points along the path for the drone to travel to, that way the drone could do other stuff during that flight
 
 import time
 
 import pygame
 import enum
+
+import math
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -44,11 +47,11 @@ class ControllerButtons(enum.Enum):
 
 #list of Points for the drone to travel to
 coordinates = [
-    Point(0, 0, 0.4),
-    Point(2, -1, 0.6),
-    Point(-0.33, 1, 1),
-    Point(-0.33, 1.53, 1),
-    Point(-0.33, 1.53, 0.7)
+    # Point(0, 0, 0.4),
+    # Point(2, -1, 0.6),
+    # Point(-0.33, 1, 1),
+    # Point(-0.33, 1.53, 1),
+    # Point(-0.33, 1.53, 0.7)
 ]
 
 def wait_for_position_estimator(scf):
@@ -131,10 +134,35 @@ def vector_substract(v0, v1):
 def vector_add(v0, v1):
     return [v0[0] + v1[0], v0[1] + v1[1], v0[2] + v1[2]]
 
+def GenerateIntermittentPoints(startPoint, endPoint, numOfPoints):
+    xIncrement = (endPoint.x - startPoint.x) / numOfPoints
+    yIncrement = (endPoint.y - startPoint.y) / numOfPoints
+    zIncrement = (endPoint.z - startPoint.z) / numOfPoints
+
+    points = []
+    currX = startPoint.x
+    currY = startPoint.y
+    currZ = startPoint.z
+
+    for i in range(numOfPoints):
+        points.append(Point(currX, currY, currZ))
+        currX += xIncrement
+        currY += yIncrement
+        currZ += zIncrement
+
+    points.append(Point(endPoint.x, endPoint.y, endPoint.z))
+    return points
+
 def run_sequence(scf):
     global DEFAULT_HEIGHT
 
     cf = scf.cf
+
+    coordinates.append(Point(0, 0, 0.4))
+    newPoints = GenerateIntermittentPoints(Point(0, 0, 0.4), Point(1, 0, 0.4), 5)
+    for i in range(len(newPoints)):
+        coordinates.append(newPoints[i])
+    
 
     DEFAULT_HEIGHT = 0.5
     #since the crazyflie automatically takes off when we use the "with" keyword,
@@ -165,22 +193,26 @@ def run_sequence(scf):
 if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
-    pygame.init() #NEEDS to be declared to do anything with pygame
+    # pygame.init() #NEEDS to be declared to do anything with pygame
 
-    #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
-    joystick = pygame.joystick.Joystick(0)
+    # #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
+    # joystick = pygame.joystick.Joystick(0)
     
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        reset_estimator(scf)
-        set_position_callback(scf)
-        while not found_location:
-            pass
-        print(f'x: {xPos}')
-        print(f'y: {yPos}')
-        print(f'z: {zPos}')
-        run_sequence(scf)
+    # with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+    #     reset_estimator(scf)
+    #     set_position_callback(scf)
+    #     while not found_location:
+    #         pass
+    #     print(f'x: {xPos}')
+    #     print(f'y: {yPos}')
+    #     print(f'z: {zPos}')
+    #     run_sequence(scf)
 
-        
+    
+
+    points = GenerateIntermittentPoints(Point(0, 0, 0.4), Point(1, 1, 0.4), 5) 
+    for i in range(len(points)):
+        print(f"x: {points[i].x}, y: {points[i].y}, z: {points[i].z}")
         
 
         # while True:

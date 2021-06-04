@@ -1,6 +1,6 @@
 #TODO:
 #Landing correction (i.e. if you land a bit off from the target, take off and land again until within a certain margin of target)
-#Write a function that takes in a starting point and ending point and generates a list of points along the path for the drone to travel to, that way the drone could do other stuff during that flight
+#modify cflib's land function so it takes in a height to land at, instead of defaulting to a height of 0
 
 import time
 
@@ -15,6 +15,9 @@ from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.positioning.position_hl_commander import PositionHlCommander
+from cflib.utils.multiranger import Multiranger
+
+from cflib.crazyflie.mem import MemoryElement
 
 from collections import namedtuple
 
@@ -153,6 +156,62 @@ def GenerateIntermittentPoints(startPoint, endPoint, numOfPoints):
     points.append(Point(endPoint.x, endPoint.y, endPoint.z))
     return points
 
+def is_close(measured_range, distance):
+    if measured_range is None:
+        return False
+    else:
+        return measured_range < distance
+
+def set_led_ring_solid_color(scf, rVal, gVal, bVal):
+    cf = scf.cf
+    # Set virtual mem effect effect
+    cf.param.set_value('ring.effect', '13')
+
+    # # Get LED memory and write to it
+    mem = cf.mem.get_mems(MemoryElement.TYPE_DRIVER_LED)
+
+    if len(mem) > 0:
+        for i in range(12):
+            mem[0].leds[i].set(r=rVal, g=gVal, b=bVal)
+            
+        mem[0].write_data(None)
+        
+
+
+def run_multiranger_sequence(scf):
+    global DEFAULT_HEIGHT
+    
+    cf = scf.cf
+
+    DEFAULT_HEIGHT = 0.5
+
+    distance = 0.2
+
+    points = GenerateIntermittentPoints(Point(0, 0, 0.5), Point(1, 0, 0.5), 20)
+    saw_object = False
+
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
+        with Multiranger(scf) as multiranger:
+            pc.set_default_velocity(0.1)
+            for i in range(len(points)):
+                currPoint = points[i]
+                print(f"x: {currPoint.x}, y: {currPoint.y}, z: {currPoint.z}")
+                pc.go_to(currPoint.x, currPoint.y, currPoint.z)
+                if is_close(multiranger.front, distance):
+                    print("saw object")
+                    set_led_ring_solid_color(scf, 0, 50, 0)
+                    saw_object = True
+                    break
+
+            print("exited loop")
+            if not saw_object:
+                set_led_ring_solid_color(scf, 0, 0, 50)
+            time.sleep(2)
+            pc.go_to(0, 0, 0.1)
+            time.sleep(1)
+        
+
+
 def run_sequence(scf):
     global DEFAULT_HEIGHT
 
@@ -163,11 +222,13 @@ def run_sequence(scf):
     for i in range(len(newPoints)):
         coordinates.append(newPoints[i])
     
-
+    coordinates.append(Point(0, 0, 0.2))
     DEFAULT_HEIGHT = 0.5
     #since the crazyflie automatically takes off when we use the "with" keyword,
     #adding its zPos to the default height ensures that it rises to the default height in reference to its starting height
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT+zPos, default_velocity=1) as pc:
+        
+        
         #fly to random positions, waiting for controller input between each movement
         button_pressed = -1
         for (x, y, z) in coordinates:
@@ -187,7 +248,14 @@ def run_sequence(scf):
             elif button_pressed == ControllerButtons.X.value:
                 pc.set_default_velocity(0.1)
 
-        time.sleep(1)
+        # pc.go_to(0, 0, 0.4)
+        # time.sleep(3)
+        # pc.go_to(1, 0, 0.4)
+        # time.sleep(2)
+        # pc.go_to(1, 1, 0.4)
+        # time.sleep(1)
+        # pc.go_to(0, 0, 0.1)
+        # time.sleep(2)
 
 
 if __name__ == '__main__':
@@ -198,21 +266,27 @@ if __name__ == '__main__':
     # #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
     # joystick = pygame.joystick.Joystick(0)
     
-    # with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-    #     reset_estimator(scf)
-    #     set_position_callback(scf)
-    #     while not found_location:
-    #         pass
-    #     print(f'x: {xPos}')
-    #     print(f'y: {yPos}')
-    #     print(f'z: {zPos}')
-    #     run_sequence(scf)
+    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
 
-    
+        scf.cf.param.set_value('ring.effect', '0')
+        time.sleep(0.5) #some delay needs to happen for setting the ring.effect to take effect
 
-    points = GenerateIntermittentPoints(Point(0, 0, 0.4), Point(1, 1, 0.4), 5) 
-    for i in range(len(points)):
-        print(f"x: {points[i].x}, y: {points[i].y}, z: {points[i].z}")
+        reset_estimator(scf)
+        set_position_callback(scf)
+        while not found_location:
+            pass
+        print(f'x: {xPos}')
+        print(f'y: {yPos}')
+        print(f'z: {zPos}')
+        #run_sequence(scf)
+        run_multiranger_sequence(scf)
+
+        
+        
+
+    # points = GenerateIntermittentPoints(Point(0, 0, 0.4), Point(1, 1, 0.4), 5) 
+    # for i in range(len(points)):
+    #     print(f"x: {points[i].x}, y: {points[i].y}, z: {points[i].z}")
         
 
         # while True:

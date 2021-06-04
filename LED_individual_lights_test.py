@@ -53,9 +53,9 @@ if __name__ == '__main__':
         cf = scf.cf
 
         # Set virtual mem effect effect
-        cf.param.set_value('ring.effect', '0')
+        cf.param.set_value('ring.effect', '13')
 
-        # # Get LED memory and write to it
+        # Get LED memory and write to it
         mem = cf.mem.get_mems(MemoryElement.TYPE_DRIVER_LED)
         # if len(mem) > 0:
         #     mem[0].leds[0].set(r=0,   g=100, b=0)

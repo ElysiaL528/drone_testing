@@ -47,14 +47,16 @@ class ControllerButtons(enum.Enum):
     Y = 3
     LB = 4
     RB = 5
+    LSB = 8
+    RSB = 9
 
 #list of Points for the drone to travel to
 coordinates = [
-    # Point(0, 0, 0.4),
-    # Point(2, -1, 0.6),
-    # Point(-0.33, 1, 1),
-    # Point(-0.33, 1.53, 1),
-    # Point(-0.33, 1.53, 0.7)
+    Point(0, 0, 0.4),
+    Point(2, -1, 0.6),
+    Point(-0.33, 1, 1),
+    Point(-0.33, 1.53, 1),
+    Point(-0.33, 1.53, 0.7)
 ]
 
 def wait_for_position_estimator(scf):
@@ -118,7 +120,7 @@ def position_callback(timestamp, data, logconf):
 
     found_location = True
 
-    print('pos: ({}, {}, {})'.format(xPos, yPos, zPos))
+    #print('pos: ({}, {}, {})'.format(xPos, yPos, zPos))
 
 def set_position_callback(scf):
     log_conf = LogConfig(name='Position', period_in_ms=500)
@@ -240,6 +242,7 @@ def run_sequence(scf):
                     button_pressed = event.dict.get("button")
                     if event.type == pygame.JOYBUTTONDOWN:
                         print("Joystick button pressed.")
+                        print(f"button: {button_pressed}")
                         pressed_button = True
             if button_pressed == ControllerButtons.LB.value: #the LB button cancels the rest of the flight & returns to origin
                 pc.set_default_velocity(0.2)
@@ -257,14 +260,57 @@ def run_sequence(scf):
         # pc.go_to(0, 0, 0.1)
         # time.sleep(2)
 
+def run_customized_sequence(scf):
+    global DEFAULT_HEIGHT
+
+    DEFAULT_HEIGHT = 0.3
+
+    distance = 0.2
+    zDistance = 0.2
+
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=0.1) as pc:
+        button_pressed = -1
+        pressed_button = False
+        exit = False
+
+        while not exit:
+            while not pressed_button:
+                for event in pygame.event.get(): # User did something.
+                    button_pressed = event.dict.get("button")
+                    if event.type == pygame.JOYBUTTONDOWN:
+                        print("Joystick button pressed.")
+                        print(f"button: {button_pressed}")
+                        pressed_button = True
+                        break
+            pressed_button = False
+            if button_pressed == ControllerButtons.LSB.value: #the LSB button cancels the rest of the flight & returns to origin
+                pc.set_default_velocity(0.2)
+                pc.go_to(0, 0, 0.2)
+                break
+            elif button_pressed == ControllerButtons.RSB.value: #land in placek
+                pc.land()
+                break
+            elif button_pressed == ControllerButtons.X.value:
+                pc.go_to(xPos - distance, yPos, zPos)
+            elif button_pressed == ControllerButtons.Y.value:
+                pc.go_to(xPos, yPos + distance, zPos)
+            elif button_pressed == ControllerButtons.A.value:
+                pc.go_to(xPos, yPos - distance, zPos)
+            elif button_pressed == ControllerButtons.B.value:
+                pc.go_to(xPos + distance, yPos, zPos)
+            elif button_pressed == ControllerButtons.LB.value:
+                pc.go_to(xPos, yPos, zPos - zDistance)
+            elif button_pressed == ControllerButtons.RB.value:
+                pc.go_to(xPos, yPos, zPos + zDistance)
+
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
-    # pygame.init() #NEEDS to be declared to do anything with pygame
+    pygame.init() #NEEDS to be declared to do anything with pygame
 
-    # #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
-    # joystick = pygame.joystick.Joystick(0)
+    #this NEEDS to be declared, even if you don't do anything with the variable, for pygame to detect the controller's events
+    joystick = pygame.joystick.Joystick(0)
     
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
 
@@ -279,7 +325,7 @@ if __name__ == '__main__':
         print(f'y: {yPos}')
         print(f'z: {zPos}')
         #run_sequence(scf)
-        run_multiranger_sequence(scf)
+        run_customized_sequence(scf)
 
         
         

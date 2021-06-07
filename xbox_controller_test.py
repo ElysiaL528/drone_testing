@@ -33,7 +33,6 @@ if __name__ == "__main__":
                 done = True # Flag that we are done so we exit this loop.
             elif event.type == pygame.JOYBUTTONDOWN:
                 print("Joystick button pressed.")
-                if button_pressed == 0:
-                    print("A")
+                print(f"button pressed: {button_pressed}")
             elif event.type == pygame.JOYBUTTONUP:
                 print("Joystick button released.")

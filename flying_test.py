@@ -11,7 +11,7 @@ from cflib.positioning.position_hl_commander import PositionHlCommander
 
 import math
 
-URI = 'radio://0/80/2M/E7E7E7E7D4'
+URI = 'radio://0/80/2M/E7E7E7E7E7'
 DEFAULT_HEIGHT = 0.5
 
 is_deck_attached = False
@@ -30,10 +30,10 @@ def param_deck_flow(name, value):
 
 def take_off_simple(scf):
     with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
-        pc.go_to(0, 0, 0.3)
+        pc.go_to(0, 0, 0.5)
         time.sleep(2)
-        pc.go_to(0, 0, 1.5)
-        time.sleep(1)
+        # pc.go_to(0, 0, 1.5)
+        # time.sleep(1)
         
 
 if __name__ == '__main__':

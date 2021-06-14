@@ -266,13 +266,18 @@ def run_customized_sequence(scf):
     DEFAULT_HEIGHT = 0.3
 
     distance = 0.2
-    zDistance = 0.2
+    zDistance = 0.1
 
-    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=0.1) as pc:
+    xGoal = 0
+    yGoal = 0
+    zGoal = 0.3
+
+    with PositionHlCommander(scf, default_height=DEFAULT_HEIGHT, default_velocity=1) as pc:
+        
         button_pressed = -1
         pressed_button = False
         exit = False
-
+        pc.set_default_velocity(0.3)
         while not exit:
             while not pressed_button:
                 for event in pygame.event.get(): # User did something.
@@ -283,25 +288,28 @@ def run_customized_sequence(scf):
                         pressed_button = True
                         break
             pressed_button = False
+            
             if button_pressed == ControllerButtons.LSB.value: #the LSB button cancels the rest of the flight & returns to origin
                 pc.set_default_velocity(0.2)
                 pc.go_to(0, 0, 0.2)
                 break
-            elif button_pressed == ControllerButtons.RSB.value: #land in placek
+            elif button_pressed == ControllerButtons.RSB.value: #land in place
                 pc.land()
                 break
             elif button_pressed == ControllerButtons.X.value:
-                pc.go_to(xPos - distance, yPos, zPos)
+                xGoal -= distance
             elif button_pressed == ControllerButtons.Y.value:
-                pc.go_to(xPos, yPos + distance, zPos)
+                yGoal += distance
             elif button_pressed == ControllerButtons.A.value:
-                pc.go_to(xPos, yPos - distance, zPos)
+                yGoal -= distance
             elif button_pressed == ControllerButtons.B.value:
-                pc.go_to(xPos + distance, yPos, zPos)
+                xGoal += distance
             elif button_pressed == ControllerButtons.LB.value:
-                pc.go_to(xPos, yPos, zPos - zDistance)
+                zGoal -= zDistance
             elif button_pressed == ControllerButtons.RB.value:
-                pc.go_to(xPos, yPos, zPos + zDistance)
+                zGoal += zDistance
+            pc.go_to(xGoal, yGoal, zGoal)
+            print(f"x: {xGoal}, y: {yGoal}, z: {zGoal}")
 
 
 if __name__ == '__main__':
@@ -314,7 +322,7 @@ if __name__ == '__main__':
     
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
 
-        scf.cf.param.set_value('ring.effect', '0')
+        #scf.cf.param.set_value('ring.effect', '0')
         time.sleep(0.5) #some delay needs to happen for setting the ring.effect to take effect
 
         reset_estimator(scf)

@@ -1,0 +1,28 @@
+0: Off - turns ring off, does not turn off front-facing lights
+1: White spinner - A single white dot goes around the circle
+2: Color spinner - A spinning ring of red, white, and blue
+3: Tilt effect - Shows in what direction the drone is tilting (brighter colors toward the sides its tilted toward)
+4: Brightness effect - A ring of lights that gets brighter the faster the drone is moving
+5: Color spinner - Spins a dot (of customized color) around the ring
+6: Double spinner - Two dots spin around the ring in opposite directions
+7: Solid color effect - The entire ring displays the same color (customized through setting ring.solidRed, ring.solidGreen, ring.solidBlue params from 0-100)
+8: Factory test - The ring alternates solid colors, front lights turn on 
+9: Battery status - Displays blue for higher batter, and gradually shifts to light purple as battery decreases? needs testing
+10: Boat lights - Half the ring is green, half the ring is red, except the top and bottom LEDs which are white
+11: Alert - Flashes blue lights
+12: Gravity - Shows white lights on the side of the drone closest to the ground (basically like tilt effect)
+13: Virtual memory effect - makes each individual LED customizable by writing to the LED's memory its 'r', 'g', and 'b' value (example in LED_individual_lights_test)
+
+
+https://wiki.bitcraze.io/projects:crazyflie2:expansionboards:ledring
+other params:
+ring.emptyCharge
+ring.fullCharge
+ring.glowstep
+ring.headlightEnable
+ring.neffect - Headlight LEDS (0=off, 1=off)
+ring.solidBlue
+ring.solidGreen
+ring.solidRed
+ring.fadeTime (takes in float)
+ring.fadeColor (takes in hex val)
